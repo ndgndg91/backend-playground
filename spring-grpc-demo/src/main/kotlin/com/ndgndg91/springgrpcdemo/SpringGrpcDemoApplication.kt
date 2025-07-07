@@ -1,4 +1,4 @@
-package kr.co.coinone.springgrpcdemo
+package com.ndgndg91.springgrpcdemo
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

@@ -8,8 +8,7 @@ plugins {
     id("com.google.protobuf") version "0.9.4"
 }
 
-group = "kr.co.coinone"
-version = "0.0.1-SNAPSHOT"
+group = "com.ndgndg91"
 
 java {
     toolchain {

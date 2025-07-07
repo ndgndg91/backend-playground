@@ -1,4 +1,4 @@
-package kr.co.coinone.springgrpcdemo
+package com.ndgndg91.springgrpcdemo
 
 import io.grpc.stub.StreamObserver
 import kr.co.coinone.proto.HelloReply
