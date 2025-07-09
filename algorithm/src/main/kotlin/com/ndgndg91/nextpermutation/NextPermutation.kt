@@ -40,6 +40,10 @@ package com.ndgndg91.nextpermutation
 class NextPermutation {
     init {
         check(nextPermutation(arrayOf(1,2,3)).contentEquals(arrayOf(1,3,2)))
+        check(nextPermutation(arrayOf(1,3,2)).contentEquals(arrayOf(2,1,3)))
+        check(nextPermutation(arrayOf(2,1,3)).contentEquals(arrayOf(2,3,1)))
+        check(nextPermutation(arrayOf(2,3,1)).contentEquals(arrayOf(3,1,2)))
+        check(nextPermutation(arrayOf(3,1,2)).contentEquals(arrayOf(3,2,1)))
         check(nextPermutation(arrayOf(1,2,3,4)).contentEquals(arrayOf(1,2,4,3)))
         check(nextPermutation(arrayOf(1,2,4,3)).contentEquals(arrayOf(1,3,2,4)))
         check(nextPermutation(arrayOf(1,3,2,4)).contentEquals(arrayOf(1,3,4,2)))
@@ -48,13 +52,13 @@ class NextPermutation {
         check(nextPermutation(arrayOf(1,4,3,2)).contentEquals(arrayOf(2,1,3,4)))
         check(nextPermutation(arrayOf(2,4,3,1)).contentEquals(arrayOf(3,1,2,4)))
 
-//        check(nextPermutationOptimize(arrayOf(1,2,3)).contentEquals(arrayOf(1,3,2)))
-//        check(nextPermutationOptimize(arrayOf(1,2,3,4)).contentEquals(arrayOf(1,2,4,3)))
-//        check(nextPermutationOptimize(arrayOf(1,2,4,3)).contentEquals(arrayOf(1,3,2,4)))
-//        check(nextPermutationOptimize(arrayOf(1,3,2,4)).contentEquals(arrayOf(1,3,4,2)))
-//        check(nextPermutationOptimize(arrayOf(1,3,4,2)).contentEquals(arrayOf(1,4,2,3)))
-//        check(nextPermutationOptimize(arrayOf(1,4,2,3)).contentEquals(arrayOf(1,4,3,2)))
-//        check(nextPermutationOptimize(arrayOf(1,4,3,2)).contentEquals(arrayOf(2,1,3,4)))
+        check(nextPermutationOptimize(arrayOf(1,2,3)).contentEquals(arrayOf(1,3,2)))
+        check(nextPermutationOptimize(arrayOf(1,2,3,4)).contentEquals(arrayOf(1,2,4,3)))
+        check(nextPermutationOptimize(arrayOf(1,2,4,3)).contentEquals(arrayOf(1,3,2,4)))
+        check(nextPermutationOptimize(arrayOf(1,3,2,4)).contentEquals(arrayOf(1,3,4,2)))
+        check(nextPermutationOptimize(arrayOf(1,3,4,2)).contentEquals(arrayOf(1,4,2,3)))
+        check(nextPermutationOptimize(arrayOf(1,4,2,3)).contentEquals(arrayOf(1,4,3,2)))
+        check(nextPermutationOptimize(arrayOf(1,4,3,2)).contentEquals(arrayOf(2,1,3,4)))
         check(nextPermutationOptimize(arrayOf(2,4,3,1)).contentEquals(arrayOf(3,1,2,4)))
         println("next permutation pass")
     }
