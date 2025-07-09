@@ -54,6 +54,10 @@ class TwoSum {
         }
         println("two sum pass")
     }
+
+    /**
+     * 이중 포문 O(n 제곱)
+     */
     fun twoSumBruteForce(array: Array<Int>, target: Int): Array<Int> {
         for ((iIndex, iValue) in array.withIndex() ) {
             for (jIndex in iIndex + 1 until array.size) {
@@ -64,6 +68,10 @@ class TwoSum {
         }
         throw IllegalStateException("없음")
     }
+
+    /**
+     * hash map 을 통한 o(n)
+     */
     fun twoSum(array: Array<Int>, target: Int): Array<Int> {
         val map = hashMapOf<Int, Int>()
         array.forEachIndexed { index, i ->

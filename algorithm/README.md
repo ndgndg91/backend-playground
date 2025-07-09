@@ -1,0 +1,11 @@
+- LFU cache
+- world counter
+- two sum
+- in-memory file system
+- circuit breaker
+- rate limiter
+- next permutation
+- basic calculator
+
+- hotel reservation
+- movie ticketing
