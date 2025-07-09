@@ -1,33 +1,32 @@
 package com.ndgndg91.twosum
 
 
-data class Input(
-    val input: Array<Int>,
-    val target: Int,
-    val output: Array<Int>,
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Input
-
-        if (target != other.target) return false
-        if (!input.contentEquals(other.input)) return false
-        if (!output.contentEquals(other.output)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = target
-        result = 31 * result + input.contentHashCode()
-        result = 31 * result + output.contentHashCode()
-        return result
-    }
-}
-
 class TwoSum {
+    data class Input(
+        val input: Array<Int>,
+        val target: Int,
+        val output: Array<Int>,
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Input
+
+            if (target != other.target) return false
+            if (!input.contentEquals(other.input)) return false
+            if (!output.contentEquals(other.output)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = target
+            result = 31 * result + input.contentHashCode()
+            result = 31 * result + output.contentHashCode()
+            return result
+        }
+    }
     init {
         val testCases = listOf(
             Input(input = arrayOf(2, 7, 11, 15), target = 9, output = arrayOf(0, 1)),
@@ -55,29 +54,27 @@ class TwoSum {
         }
         println("two sum pass")
     }
-}
-
-fun twoSumBruteForce(array: Array<Int>, target: Int): Array<Int> {
-    for ((iIndex, iValue) in array.withIndex() ) {
-        for (jIndex in iIndex + 1 until array.size) {
-            if (iValue + array[jIndex] == target) {
-                return arrayOf(iIndex, jIndex)
+    fun twoSumBruteForce(array: Array<Int>, target: Int): Array<Int> {
+        for ((iIndex, iValue) in array.withIndex() ) {
+            for (jIndex in iIndex + 1 until array.size) {
+                if (iValue + array[jIndex] == target) {
+                    return arrayOf(iIndex, jIndex)
+                }
             }
         }
+        throw IllegalStateException("없음")
     }
-    throw IllegalStateException("없음")
-}
-
-fun twoSum(array: Array<Int>, target: Int): Array<Int> {
-    val map = hashMapOf<Int, Int>()
-    array.forEachIndexed { index, i ->
-        val complement = target - i
-        val complementIndex = map.get(complement)
-        if (complementIndex != null) {
-            return arrayOf(complementIndex, index)
-        } else {
-            map.put(i, index)
+    fun twoSum(array: Array<Int>, target: Int): Array<Int> {
+        val map = hashMapOf<Int, Int>()
+        array.forEachIndexed { index, i ->
+            val complement = target - i
+            val complementIndex = map.get(complement)
+            if (complementIndex != null) {
+                return arrayOf(complementIndex, index)
+            } else {
+                map.put(i, index)
+            }
         }
+        throw IllegalStateException("없음")
     }
-    throw IllegalStateException("없음")
 }
