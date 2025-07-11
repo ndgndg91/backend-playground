@@ -1,9 +1,9 @@
-# main 브랜치의 최신 커밋을 가져옴
-MAIN_HEAD=$(git rev-parse main)
-
 # 현재 브랜치가 main의 조상을 포함하는지 확인
-if git merge-base --is-ancestor $MAIN_HEAD HEAD; then
-    echo "현재 브랜치는 main 브랜치의 최신 내용을 포함하고 있습니다. ✅"
+if git merge-base --is-ancestor origin/main HEAD; then
+    echo "✅ 브랜치가 최신 main을 포함하고 있습니다. 안전합니다."
+    exit 0
 else
-    echo "현재 브랜치가 main 브랜치에서 분기되었습니다. 'git pull' 또는 'git rebase'를 고려해보세요. ❌"
+    echo "❌ 위험: 브랜치가 최신 main 을 포함하고 있지 않습니다!"
+    echo "이 브랜치를 배포하기 전에 'git rebase origin/main'을 실행하여 최신 코드를 반영해주세요."
+    exit 1 # 파이프라인 실패 처리
 fi
