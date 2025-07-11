@@ -2,10 +2,8 @@ package com.ndgndg91.basiccalculator
 
 class BasicCalculator {
 
-    /**
-     * "1 + 1"
-     */
     fun calculate(s: String): Int {
+        val s = s.replace(" ", "")
         var result = 0
         var sign = 1
         var i = 0
@@ -17,15 +15,16 @@ class BasicCalculator {
                         number += s[i]
                         i++
                     }
-                    println("$number is a digit")
+//                    println("$number is a digit")
                     result += +number.toInt() * sign
+                    continue
                 }
                 s[i] == '+' -> {
-                    println("${s[i]} is not a number")
+//                    println("${s[i]} is not a number")
                     sign = 1
                 }
                 s[i] == '-' -> {
-                    println("${s[i]} isn not a number")
+//                    println("${s[i]} isn not a number")
                     sign = -1
                 }
             }
@@ -37,9 +36,18 @@ class BasicCalculator {
 }
 
 fun main() {
-    check(BasicCalculator().calculate("1 + 12") == 13)
-    check(BasicCalculator().calculate("1 - 12") == -11)
+    val basicCalculator = BasicCalculator()
+    check(basicCalculator.calculate(" ") == 0)
+    check(basicCalculator.calculate("1 + 12") == 13)
+    check(basicCalculator.calculate("1+12") == 13)
+    check(basicCalculator.calculate("1 - 12") == -11)
+    check(basicCalculator.calculate("1-12") == -11)
 
-    check(BasicCalculator().calculate("1 + 12 + 2") == 15)
-    check(BasicCalculator().calculate("1 - 12 - 4") == -15)
+    check(basicCalculator.calculate("1 + 12 + 2") == 15)
+    check(basicCalculator.calculate("1+12+2") == 15)
+    check(basicCalculator.calculate("1 - 12 - 4") == -15)
+    check(basicCalculator.calculate("1-12-4") == -15)
+
+    check(basicCalculator.calculate("1 - 12+15-30+15") == -11)
 }
+
