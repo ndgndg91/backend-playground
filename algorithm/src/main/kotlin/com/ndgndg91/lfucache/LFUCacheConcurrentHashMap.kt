@@ -43,32 +43,32 @@ class LFUCache(private val capacity: Int) {
             cache.put(key, Value(AtomicInteger(1), logicalTime++, value))
         }
     }
-}
 
-fun main() {
-    testCase1()
-    testCase2()
-}
+    fun test() {
+        testCase1()
+        testCase2()
+    }
 
-private fun testCase2() {
-    val cache = LFUCache(2)
-    cache.put(3,1)
-    cache.put(2,1)
-    cache.put(2,2)
-    cache.put(4,4)
-    cache.get(2)
-}
+    private fun testCase2() {
+        val cache = LFUCache(2)
+        cache.put(3,1)
+        cache.put(2,1)
+        cache.put(2,2)
+        cache.put(4,4)
+        cache.get(2)
+    }
 
-private fun testCase1() {
-    val cache = LFUCache(2)
-    cache.put(1,1)
-    cache.put(2,2)
-    println("cache.get(1) : ${cache.get(1)}")
-    cache.put(3,3)
-    println("cache.get(2) : ${cache.get(2)}")
-    println("cache.get(3) : ${cache.get(3)}")
-    cache.put(4,4)
-    println("cache.get(1) : ${cache.get(1)}")
-    println("cache.get(3) : ${cache.get(3)}")
-    println("cache.get(4) : ${cache.get(4)}")
+    private fun testCase1() {
+        val cache = LFUCache(2)
+        cache.put(1,1)
+        cache.put(2,2)
+        println("cache.get(1) : ${cache.get(1)}")
+        cache.put(3,3)
+        println("cache.get(2) : ${cache.get(2)}")
+        println("cache.get(3) : ${cache.get(3)}")
+        cache.put(4,4)
+        println("cache.get(1) : ${cache.get(1)}")
+        println("cache.get(3) : ${cache.get(3)}")
+        println("cache.get(4) : ${cache.get(4)}")
+    }
 }
