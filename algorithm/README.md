@@ -1,8 +1,9 @@
 
 - word counter
 - in-memory file system
-- rate limiter
 
+
+- logger rate limiter
 - two sum
 - LFU cache
 - next permutation
