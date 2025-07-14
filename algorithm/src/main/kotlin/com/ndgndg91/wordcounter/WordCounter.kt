@@ -12,6 +12,10 @@ class WordCounter {
             .eachCount()
             .maxBy { it.value }.key
     }
+
+    fun test() {
+        check(WordCounter().mostCommonWord("Bob hit a ball, the hit BALL flew far after it was hit.", arrayOf("hit")) == "ball")
+    }
 }
 
 // [^0-9] 숫자를 제외한 패턴
