@@ -1,7 +1,7 @@
 package com.ndgndg91.inmemoryfilesystem
 
 class Trie {
-    var root = TrieNode()
+    private var root = TrieNode()
 
     fun insert(word: String) {
         var current = root
@@ -24,7 +24,13 @@ class Trie {
      * 해당 접두사로 시작하는 단어가 하나라도 있는지 확인합니다.
      */
     fun startsWith(prefix: String): Boolean {
-        TODO()
+        var current = root
+
+        for (char in prefix) {
+            current = current.children.get(char) ?: return false
+        }
+
+        return true
     }
 }
 
@@ -36,5 +42,7 @@ class TrieNode() {
 fun main() {
     val trie = Trie()
     trie.insert("apple")
-    println(trie)
+    check(trie.startsWith("app"))
+    check(trie.startsWith("apple"))
+    check(!trie.startsWith("apples"))
 }
