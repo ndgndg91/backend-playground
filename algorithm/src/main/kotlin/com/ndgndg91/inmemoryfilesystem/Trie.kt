@@ -17,7 +17,13 @@ class Trie {
      *  Trie에 해당 단어가 정확히 존재하는지 확인합니다.
      */
     fun search(word: String): Boolean {
-        TODO()
+        var current = root
+
+        for (char in word) {
+            current = current.children[char] ?: return false
+        }
+
+        return current.isEnd
     }
 
     /**
@@ -45,4 +51,7 @@ fun main() {
     check(trie.startsWith("app"))
     check(trie.startsWith("apple"))
     check(!trie.startsWith("apples"))
+
+    check(!trie.search("app"))
+    check(trie.search("apple"))
 }
