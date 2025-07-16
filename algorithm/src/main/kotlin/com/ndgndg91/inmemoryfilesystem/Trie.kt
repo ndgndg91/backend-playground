@@ -38,6 +38,60 @@ class Trie {
 
         return true
     }
+
+    fun getWordsWithPrefix(prefix: String): List<String> {
+        var current = root
+
+        for (char in prefix) {
+            current = current.children[char] ?: return emptyList()
+        }
+
+        val startNode = current
+        val words = mutableListOf<String>()
+        findEnd(startNode, StringBuilder(prefix), words)
+        return words
+    }
+
+    private fun findEnd(node: TrieNode, builder: StringBuilder, words: MutableList<String>) {
+        if (node.isEnd) {
+            words.add(builder.toString())
+        }
+
+        for ((char, childNode) in node.children) {
+            builder.append(char)
+            findEnd(childNode, builder, words)
+            builder.deleteCharAt(builder.length - 1)
+        }
+    }
+
+    fun delete(word: String) {
+        val nodeStack = ArrayDeque<TrieNode>()
+        nodeStack.addLast(root)
+
+        for (char in word) {
+            val next = nodeStack.last().children[char] ?: return
+            nodeStack.addLast(next)
+        }
+
+        val lastNode = nodeStack.last()
+        if (!lastNode.isEnd) {
+            return
+        }
+
+        lastNode.isEnd = false
+
+        for (i in word.lastIndex downTo 0) {
+            val current = nodeStack.removeLast()
+            val parentNode = nodeStack.last()
+
+            if (current.isEnd && current.children.isEmpty()) {
+                parentNode.children.remove(word[i])
+            } else {
+                break
+            }
+        }
+
+    }
 }
 
 class TrieNode() {
@@ -54,4 +108,16 @@ fun main() {
 
     check(!trie.search("app"))
     check(trie.search("apple"))
+
+    trie.delete("apple")
+    check(!trie.search("apple"))
+    trie.insert("apple")
+    check(trie.search("apple"))
+    trie.delete("app")
+    check(!trie.search("app"))
+    check(trie.search("apple"))
+
+    check(trie.getWordsWithPrefix("app") == listOf("apple"))
+    trie.insert("application")
+    check(trie.getWordsWithPrefix("app") == listOf("apple", "application"))
 }
