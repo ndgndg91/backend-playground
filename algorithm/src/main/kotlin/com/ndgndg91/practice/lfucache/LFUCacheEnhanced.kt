@@ -1,4 +1,4 @@
-package com.ndgndg91.lfucache
+package com.ndgndg91.practice.lfucache
 
 class LFUCacheEnhanced(private val capacity: Int) {
 

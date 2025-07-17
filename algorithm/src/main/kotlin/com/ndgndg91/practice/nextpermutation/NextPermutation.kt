@@ -1,4 +1,4 @@
-package com.ndgndg91.nextpermutation
+package com.ndgndg91.practice.nextpermutation
 
 //3! = 3 * 2 * 1 = 6
 

@@ -1,4 +1,4 @@
-package com.ndgndg91.basiccalculator
+package com.ndgndg91.practice.basiccalculator
 
 import java.util.*
 

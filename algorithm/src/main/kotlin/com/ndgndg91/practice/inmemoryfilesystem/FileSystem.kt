@@ -1,4 +1,4 @@
-package com.ndgndg91.inmemoryfilesystem
+package com.ndgndg91.practice.inmemoryfilesystem
 
 import java.util.*
 

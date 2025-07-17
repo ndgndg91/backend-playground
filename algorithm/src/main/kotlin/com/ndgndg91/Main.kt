@@ -1,10 +1,10 @@
 package com.ndgndg91
 
-import com.ndgndg91.lfucache.LFUCache
-import com.ndgndg91.loggerratelimiter.Logger
-import com.ndgndg91.nextpermutation.NextPermutation
-import com.ndgndg91.twosum.TwoSum
-import com.ndgndg91.wordcounter.WordCounter
+import com.ndgndg91.practice.lfucache.LFUCache
+import com.ndgndg91.practice.loggerratelimiter.Logger
+import com.ndgndg91.practice.nextpermutation.NextPermutation
+import com.ndgndg91.practice.twosum.TwoSum
+import com.ndgndg91.practice.wordcounter.WordCounter
 
 
 fun main() {

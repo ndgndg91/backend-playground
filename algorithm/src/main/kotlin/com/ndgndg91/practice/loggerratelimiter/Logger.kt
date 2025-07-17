@@ -1,4 +1,4 @@
-package com.ndgndg91.loggerratelimiter
+package com.ndgndg91.practice.loggerratelimiter
 
 class Logger {
     private val limiter = HashMap<String, Int>()

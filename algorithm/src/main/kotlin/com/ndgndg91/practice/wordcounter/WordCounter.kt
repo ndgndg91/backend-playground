@@ -1,4 +1,4 @@
-package com.ndgndg91.wordcounter
+package com.ndgndg91.practice.wordcounter
 
 class WordCounter {
     private val wordMap = HashMap<String, Int>()

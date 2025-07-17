@@ -1,4 +1,4 @@
-package com.ndgndg91.twosum
+package com.ndgndg91.practice.twosum
 
 
 class TwoSum {

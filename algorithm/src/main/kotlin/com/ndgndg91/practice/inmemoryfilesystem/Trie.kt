@@ -1,4 +1,7 @@
-package com.ndgndg91.inmemoryfilesystem
+package com.ndgndg91.practice.inmemoryfilesystem
+
+import kotlin.collections.iterator
+import kotlin.text.iterator
 
 class Trie {
     private var root = TrieNode()

@@ -1,4 +1,4 @@
-package com.ndgndg91.nextpermutation
+package com.ndgndg91.practice.nextpermutation
 
 class NextPermutationSecond {
 

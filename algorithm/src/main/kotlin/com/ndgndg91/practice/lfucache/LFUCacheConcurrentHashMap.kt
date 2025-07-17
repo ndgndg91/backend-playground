@@ -1,4 +1,4 @@
-package com.ndgndg91.lfucache
+package com.ndgndg91.practice.lfucache
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
