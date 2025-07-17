@@ -60,6 +60,11 @@ class TwoSum {
             check(result2.contentEquals(case.output.first())) {
                 "Test ${index + 1} failed: expected ${case.output.first().contentToString()}, got ${result2.contentToString()}"
             }
+
+            val result3 = twoSumAgain(case.input, case.target)
+            check(result3.contentEquals(case.output.first())) {
+                "Test ${index + 1} failed: expected ${case.output.first().contentToString()}, got ${result2.contentToString()}"
+            }
         }
         multiplePairTestCase.forEachIndexed { index, case ->
             val result3 = twoSumPairs(case.input, case.target)
@@ -68,6 +73,20 @@ class TwoSum {
             }
         }
         println("two sum pass")
+    }
+
+    fun twoSumAgain(array: Array<Int>, target: Int): Array<Int> {
+        val map = HashMap<Int, Int>()
+        for (i in array.indices) {
+            val complement = target - array[i]
+            val complementIndex = map.get(complement)
+            if (complementIndex != null) {
+                return arrayOf(complementIndex, i)
+            }
+            map.put(array[i], i)
+        }
+
+        throw IllegalStateException("No two sum pass")
     }
 
     /**
