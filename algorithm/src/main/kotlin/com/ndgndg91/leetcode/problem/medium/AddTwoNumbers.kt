@@ -1,4 +1,4 @@
-package com.ndgndg91.leetcode.problem
+package com.ndgndg91.leetcode.problem.medium
 
 import java.math.BigInteger
 import kotlin.plus

@@ -1,4 +1,4 @@
-package com.ndgndg91.leetcode.problem
+package com.ndgndg91.leetcode.problem.easy
 
 import kotlin.math.max
 
