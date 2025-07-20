@@ -27,8 +27,8 @@ class Solution {
 
 fun main() {
     val solution = Solution()
-//    check(solution.lengthOfLongestSubstring("abcabcbb") == 3)
-//    check(solution.lengthOfLongestSubstring("bbbbb") == 1)
-//    check(solution.lengthOfLongestSubstring("pwwkew") == 3)
+    check(solution.lengthOfLongestSubstring("abcabcbb") == 3)
+    check(solution.lengthOfLongestSubstring("bbbbb") == 1)
+    check(solution.lengthOfLongestSubstring("pwwkew") == 3)
     check(solution.lengthOfLongestSubstring("dvdf") == 3)
 }
