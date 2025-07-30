@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: point-api
+  datasource:
+    url: jdbc:mysql://localhost:3308/my_sandbox
+    username: ndgndg91
+    password: ndgndg91
+    driver-class-name: com.mysql.jdbc.Driver
