@@ -16,6 +16,7 @@ class BinaryTreeInorderTraversal {
         var right: TreeNode? = null
     }
 
+    // left -> self -> right
     class Solution {
         fun inorderTraversal(root: TreeNode?): List<Int> {
             val result = mutableListOf<Int>()
