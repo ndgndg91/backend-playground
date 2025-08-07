@@ -27,18 +27,21 @@ class PointPool(
      * 매핑된 내부 업무용 계정 ID
      */
     @Column(name = "account_id", nullable = false)
-    var accountId: Int,
+    val accountId: Int,
+
+    @Column(name = "portfolio_id", nullable = false)
+    val portfolioId: Int,
 
     /**
      * 포인트 지급 가능 시작일시
      */
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_datetime", nullable = false)
     var startDate: LocalDateTime = LocalDateTime.now(),
 
     /**
      * 포인트 지급 가능 종료일시
      */
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_datetime", nullable = false)
     var endDate: LocalDateTime = LocalDateTime.now(),
 
     /**
