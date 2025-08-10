@@ -1,10 +1,11 @@
 package com.ndgndg91.pointapi.service.dto
 
 data class CreatePointPoolCommand(
-    val id: Int,
-    val accountId: Int,
+    val id: Long,
+    val accountId: Long,
+    val portfolioId: Int,
     val startDatetime: Long,
     val endDatetime: Long,
     val pointValidDays: Int,
-    val budget: Int
+    val budget: Long
 )

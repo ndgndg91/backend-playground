@@ -21,13 +21,13 @@ class PointPool(
      */
     @Id
     @Column(name = "pool_id")
-    var poolId: Int,
+    var poolId: Long,
 
     /**
      * 매핑된 내부 업무용 계정 ID
      */
     @Column(name = "account_id", nullable = false)
-    val accountId: Int,
+    val accountId: Long,
 
     @Column(name = "portfolio_id", nullable = false)
     val portfolioId: Int,
@@ -36,13 +36,13 @@ class PointPool(
      * 포인트 지급 가능 시작일시
      */
     @Column(name = "start_datetime", nullable = false)
-    var startDate: LocalDateTime = LocalDateTime.now(),
+    var startDatetime: LocalDateTime = LocalDateTime.now(),
 
     /**
      * 포인트 지급 가능 종료일시
      */
     @Column(name = "end_datetime", nullable = false)
-    var endDate: LocalDateTime = LocalDateTime.now(),
+    var endDatetime: LocalDateTime = LocalDateTime.now(),
 
     /**
      * 포인트 소멸 기한 (일 단위)
