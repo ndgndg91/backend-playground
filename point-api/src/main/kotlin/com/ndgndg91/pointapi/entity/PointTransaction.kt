@@ -18,7 +18,7 @@ class PointTransaction(
     val accountId: Long,
 
     @Column(name = "pool_id")
-    val poolId: Int,
+    val poolId: Long,
 
     @Column(name = "transaction_type")
     @Convert(converter = TransactionTypeConverter::class)
