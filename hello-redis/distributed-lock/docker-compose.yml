@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:8.0.32
+    ports:
+      - "13306:3306"
+    restart: always
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_DATABASE: race_condition
+      MYSQL_USER: application_user
+      MYSQL_PASSWORD: application_user_password
+      MYSQL_ROOT_PASSWORD: root_password
+    container_name: hello-redis-mysql
+    volumes:
+      - hello_redis:/var/lib/mysql
+
+  redis:
+    image: arm64v8/redis:latest
+    ports:
+      - "16379:6379"
+    restart: always
+    container_name: hello-redis
+    volumes:
+      - hello_redis:/data
+
+volumes:
+  hello_redis:

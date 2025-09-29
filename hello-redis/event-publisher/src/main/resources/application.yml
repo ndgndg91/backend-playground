@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: event-publisher
+  data:
+    redis:
+      lettuce:
+        pool:
+          enabled: true
+      host: localhost
+      port: 6379
+server:
+  port: 7070

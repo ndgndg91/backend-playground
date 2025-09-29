@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    username: application_user
+    password: application_user_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:13306/race_condition
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+      use-new-id-generator-mappings: false
+    generate-ddl: true
+    open-in-view: false
+    properties:
+      hibernate.default_batch_fetch_size: 100
+  data:
+    redis:
+      port: 16379
+      database: 0
