@@ -1,0 +1,29 @@
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      uri: mongodb://root:example@localhost:27017/notification?authSource=admin
+  jmx:
+    enabled: false
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  kafka:
+    bootstrap-servers: localhost:9092
+
+server:
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, beans
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
