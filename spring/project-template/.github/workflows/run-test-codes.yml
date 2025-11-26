@@ -1,0 +1,56 @@
+name: Run test code on pull_request
+
+on:
+  pull_request:
+    branches: [ main, develop, feature/**, release/** ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  # Available values: `read`, `write`, `none`
+  # -- Permission: https://github.com/marketplace/actions/publish-test-results#permissions
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  run_test_codes:
+    # The type of runner that the job will run on
+    runs-on: [self-hosted, linux, build]
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 21
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Enable testcontainers reuse
+        run: |
+          FILE=~/.testcontainers.properties
+          if test -f "$FILE"; then
+            echo "$FILE exists."
+            echo "testcontainers.reuse.enable=true" >> $FILE
+          else
+            echo "docker.client.strategy=org.testcontainers.dockerclient.UnixSocketClientProviderStrategy\ntestcontainers.reuse.enable=true" > $FILE
+          fi
+
+      - name: Clean && Build template project Application with Gradle
+        run: |
+          ./gradlew clean check --stacktrace
+      - name: Archive template project test report index.html
+        uses: actions/upload-artifact@v2
+        with:
+          name: template project
+          path: build/reports/tests/test/index.html
+      - name: Publish template project unit test results
+        uses: actions/publish-unit-test-result-action@v2.10.0
+        if: always()
+        with:
+          files: build/test-results/**/*.xml

@@ -1,0 +1,272 @@
+name: Build-Deploy
+run-name: Build Image -> ${{ github.repository }} ${{ github.ref_name }}-${{ github.sha }}
+permissions:
+  id-token: write
+  contents: read
+  actions: read
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+    inputs:
+      build-only:
+        description: 'Build Only'
+        required: false
+        type: boolean
+      dev:
+        description: 'Dev Environment'
+        required: false
+        type: boolean
+      qa:
+        description: 'QA Environment'
+        required: false
+        type: boolean
+      stage:
+        description: 'Stage Environment'
+        required: false
+        type: boolean
+      prod:
+        description: 'Production Environment'
+        required: false
+        type: boolean
+
+jobs:
+  build:
+    outputs:
+      short_sha: ${{ steps.vars.outputs.short_sha }}
+      dev_deploy: ${{ env.DEV_DEPLOY }}
+
+    runs-on: [ self-hosted, linux, build ]
+
+    steps:
+      - name: Set dev deploy flag
+        run: |
+          echo "DEV_DEPLOY=false" >> $GITHUB_ENV
+          if [[ "${{ github.event_name }}" == "push" && "${GITHUB_REF##*/}" == "develop" ]]; then
+          echo "DEV_DEPLOY=true" >> $GITHUB_ENV
+          echo "DEV_DEPLOY is true by push event"
+          fi
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.dev }}" == "true" ]]; then
+          echo "DEV_DEPLOY=true" >> $GITHUB_ENV
+          echo "DEV_DEPLOY is true by workflow_dispatch"
+          fi
+      - name: Checkout origin repository
+        uses: actions/checkout@v3
+
+      - name: Check if branch is up-to-date with main (for Prod)
+        if: github.event.inputs.prod == 'true' # 운영환경일 경우에만 확인
+        run: |
+          echo "before deploy prd env, check including main branch."
+          git fetch --all
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "✅ Safe Status: current branch is including main branch."
+          else
+            echo "❌ Dangerous: lastest main branch not included! Stop build job!"
+            echo "Before deployment, apply latest main branch to release branch"
+            exit 1 # stop build job
+          fi
+
+
+      - name: Set short SHA from git commit
+        id: vars
+        run: |
+          shortSha=$(git rev-parse --short ${{ github.sha }})
+          echo "short_sha=$shortSha" >> $GITHUB_OUTPUT
+
+      - name: Configure AWS credentials
+        uses: actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ECR }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_ECR }}
+          aws-region: ap-northeast-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: actions/amazon-ecr-login@v1
+
+      - name: Replace image tag
+        id: replace-image-tag
+        run: |
+          # Replace "/" with "-" in github.ref_name
+          IMAGE_TAG=$(echo "${{ github.ref_name }}" | tr / -)-${{ steps.vars.outputs.short_sha }}
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+
+      - name: Check Image
+        id: check-image
+        uses: actions/check-ecr-image-exists@v1
+        with:
+          region: ap-northeast-2
+          repository-name: ${{ github.event.repository.name }}
+          image-tag: ${{ env.IMAGE_TAG }}
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ECR }}
+          secret-access-key: ${{ secrets.AWS_SECRET_KEY_ECR }}
+
+      - name: Skip build if image exists in ECR
+        if: steps.check-image.outputs.image-exists != 0
+        run: echo "Image already exists in ECR. Skipping build..."
+
+      #----------------------------------------------------
+      # Start build script: 레포지터리 환경별로 아래 내용 수정
+      #----------------------------------------------------
+
+      - name: Set up Make
+        id: set-up-make
+        run: |
+          sudo apt-get update
+          sudo apt-get install make
+
+      - name: Set up JDK version
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          # -- distribution: https://github.com/actions/setup-java#supported-distributions
+          distribution: 'corretto'
+
+      - name: Image build and push to ECR
+        id: build-image
+        if: steps.check-image.outputs.image-exists == 0
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ github.event.repository.name }}
+        run: |
+          # Makefile 사용하여 docker-build 진행
+          make -f ./Makefile docker-build
+          # 위 과정을 통해 빌드된 이미지 태그를 AWS Devops ecr에 push하기 전 이미지명 변경
+          docker tag ${ECR_REPOSITORY}:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          # AWS Devops account로 ECR push
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+    #----------------------------------------------------
+    # End build script
+    #----------------------------------------------------
+
+
+  ### Deploy 시작 ###
+  deploy:
+    needs: build
+    runs-on: [ self-hosted, linux, build ]
+    steps:
+      - name: Set up JDK version
+        run: |
+          echo "change this run"
+
+  release-tag:
+    permissions:
+      contents: write
+      packages: write
+    runs-on: [ self-hosted, linux, build ]
+    needs: deploy
+    if: ${{ github.event.inputs.prod == 'true' }}
+    steps:
+      - name: Extract tag from branch name
+        id: extract_tag
+        run: |
+          BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
+          if [[ "$BRANCH_NAME" == release/* ]]; then
+            TAG_NAME=$(echo "${BRANCH_NAME}" | awk -F'/' '{print $2}')
+          else
+            TAG_NAME=$BRANCH_NAME
+          fi
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+      - name: Release generation
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: ${{ env.TAG_NAME }}
+          draft: false
+          prerelease: false
+
+  setup-target-branches:
+    needs: release-tag
+    outputs:
+      matrix: ${{ steps.set_release_branches.outputs.matrix }}
+    runs-on: [ self-hosted, linux, build ]
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Fetch all branches
+        run: git fetch --all
+      - name: Set target branches
+        id: set_release_branches
+        run: |
+          CURRENT_BRANCH=${{ github.ref_name }}
+          RELEASE_BRANCHES=$(git branch -r | grep 'origin/release/' | sed 's|origin/||' | tr '\n' ',')
+          echo $CURRENT_BRANCH
+          echo $RELEASE_BRANCHES
+          # 현재 브랜치를 RELEASE_BRANCHES 에서 제거
+          RELEASE_BRANCHES=$(echo "$RELEASE_BRANCHES" | sed "s|$CURRENT_BRANCH,||g" | sed "s|,$CURRENT_BRANCH||g" | sed 's/,,/,/g' | sed 's/^,//' | sed 's/,$//')
+          RELEASE_BRANCHES=$(echo "$RELEASE_BRANCHES" | xargs)
+          echo $RELEASE_BRANCHES
+          if [ -z "$RELEASE_BRANCHES" ]; then
+            echo "No release branches found"
+            TARGET_BRANCHES="main,develop"
+          else
+            echo $RELEASE_BRANCHES
+            RELEASE_BRANCHES=$(echo "$RELEASE_BRANCHES" | sed 's/,$//' | tr -d '\n' | sed 's/^ *//;s/ *$//') # leading/trailing spaces 와 trailing comma 제거
+            echo $RELEASE_BRANCHES
+            # array 변환
+            IFS=',' read -r -a array <<< "$RELEASE_BRANCHES"
+            # 모든 element trim 처리
+            for i in "${!array[@]}"; do
+            array[$i]=$(echo "${array[$i]}" | sed 's/^ *//;s/ *$//')
+            done
+            # 문자열로 변환
+            RELEASE_BRANCHES=$(IFS=','; echo "${array[*]}")
+            echo $RELEASE_BRANCHES
+            TARGET_BRANCHES="main,develop,$RELEASE_BRANCHES"
+            echo $TARGET_BRANCHES
+          fi
+          TARGET_BRANCHES_ARRAY=$(echo -n $TARGET_BRANCHES | jq -R -s -c 'split(",")')
+          echo $TARGET_BRANCHES_ARRAY
+          echo "matrix=$TARGET_BRANCHES_ARRAY" >> $GITHUB_OUTPUT
+        shell: bash
+
+  merge-target-branches:
+    needs: setup-target-branches
+    runs-on: [ self-hosted, linux, build ]
+    permissions:
+      contents: write
+      # Pull Request 생성 시 필요
+      pull-requests: write
+    strategy:
+      matrix:
+        branch: ${{ fromJson(needs.setup-target-branches.outputs.matrix) }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Merge to ${{ matrix.branch }}
+        uses: actions/merge-branch@action-logs
+        with:
+          type: now
+          message: auto merge by github action
+          target_branch: ${{ matrix.branch }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Pull Request
+        if: failure()
+        run: |
+          PR_JSON=$(curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/json" -d '{"title": "Auto Merge Failed By Conflict","body": "Please Resolve this","head": "${{ github.ref_name }}","base": "${{ matrix.branch }}"}' https://github.coinfra.net/api/v3/repos/${{ github.repository }}/pulls)
+          echo "$PR_JSON"
+
+  delete-release-branch:
+    needs: merge-target-branches
+    runs-on: [ self-hosted, linux, build ]
+    permissions:
+      # Delete branch 할때 contents write 필요
+      contents: write
+    steps:
+      - name: Delete Branch When All Target Branch Success
+        run: |
+          echo "Deleting stale branch: ${{ github.ref_name }}"
+          response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://github.coinfra.net/api/v3/repos/${{ github.repository }}/git/refs/heads/${{ github.ref_name }})
+          if [ "$response" -eq 204 ]; then
+            echo "Successfully deleted branch: ${{ github.ref_name }}"
+          else
+            echo "Failed to delete branch: ${{ github.ref_name }}, HTTP status: $response"
+          fi

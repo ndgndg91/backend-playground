@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: PROJECT-TEMPLATE
+  config:
+    import: configserver:${REST_CONFIG_HOST:http://config-server.com}
+  cloud:
+    config:
+      enabled: true
+      profile: ${ACTIVE_PROFILE:default}

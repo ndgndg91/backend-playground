@@ -1,0 +1,39 @@
+name: Delete stale branches
+run-name: Delete Stale Branch - ${{ github.event.schedule }}
+
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron: '0 15 * * *'  # 매일 자정에 실행
+# 활성화 시 위에 걸로 변경
+
+jobs:
+  delete-stale-branches:
+    runs-on: [ self-hosted, linux, build ]
+    permissions:
+      # Delete branch 할때 contents write 필요
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Delete stale branches
+        run: |
+          git fetch --all
+          git for-each-ref --format '%(refname:short) %(authordate:unix)' refs/remotes/origin | while read branch last_commit; do
+            if [ $(( $(date +%s) - $last_commit )) -gt 5184000 ]; then
+              branch_name=${branch#*/}
+              if [[ $branch_name != "main" && $branch_name != "develop" ]]; then
+                echo "Deleting stale branch: $branch_name"
+                response=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                  -H "Accept: application/vnd.github.v3+json" \
+                  -H "X-GitHub-Api-Version: 2022-11-28" \
+                  https://github.coinfra.net/api/v3/repos/${{ github.repository }}/git/refs/heads/$branch_name)
+                if [ "$response" -eq 204 ]; then
+                  echo "Successfully deleted branch: $branch_name"
+                else
+                  echo "Failed to delete branch: $branch_name, HTTP status: $response"
+                fi
+              fi
+            fi
+          done

@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: PROJECT-TEMPLATE
+  cloud:
+    config:
+      profile: default
+      enabled: false
+  jmx:
+    enabled: false
+    lifecycle:
+      timeout-per-shutdown-phase: 30s
+
+infra:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+  document-db:
+    uri: mongodb://localhost:27017/template
+    username: root
+    database: template
+    password: example
+  default-datasource:
+    jdbc-url: jdbc:aws-wrapper:mysql://localhost:3306/test
+    username: ndgndg91
+    password: ndgndg91
+    driver-class-name: software.amazon.jdbc.Driver
+    connection-timeout: 30000
+    maximum-pool-size: 10
+    minimum-idle: 10
+    idle-timeout: 600000
+    max-lifetime: 1800000
+  secondary-datasource:
+    jdbc-url: jdbc:aws-wrapper:mysql://localhost}:3306/test
+    username: ndgndg91
+    password: ndgndg91
+    driver-class-name: software.amazon.jdbc.Driver
+  kafka:
+    producer:
+      bootstrap-server: localhost:9092
+      acks: all
+      security-protocol: PLAINTEXT
+    consumer:
+      bootstrap-server: localhost:9092
+      sync-commits: true
+      sync-commit-timeout-seconds: 5
+      group-id: TEMPLATE.CONSUMER-GROUP
+      auto-offset-reset: latest
+      security-protocol: PLAINTEXT
+      enable-auto-commit: false
+      backoff:
+        interval: 3000
+        max-failure: 3
+      dlt:
+        acks: all
+        security-protocol: PLAINTEXT
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health.probes.enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+logging:
+  structured:
+    format:
+      console: com.ndgndg91.project.global.logging.JsonStructuredLog
+  level:
+    com.ndgndg91: DEBUG

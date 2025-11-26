@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo $(. "${JAVA_APP_DIR}/newrelic-agent.sh") -Dspring.application.name=${APPLICATION_NAME} -Dspring.profiles.active=${ACTIVE_PROFILE} -Dserver.port=${SERVER_PORT}
